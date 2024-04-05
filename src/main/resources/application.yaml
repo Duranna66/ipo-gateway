@@ -9,6 +9,12 @@ spring:
         locator:
           enabled: true
           lowerCaseServiceId: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://ipo-keycloak:8000/auth/realms/ipo-realm
+
 
 eureka:
   instance:
@@ -17,7 +23,7 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: http://91.186.197.234:5757/eureka
+      defaultZone: http://ipo-eureka:5757/eureka
 
 management:
   endpoint:
