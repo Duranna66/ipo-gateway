@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -20,14 +22,17 @@ import java.util.Collection;
 @EnableWebFluxSecurity
 public class SecurityConfig {
     private final CustomJwtConverter customJwtConverter;
+    private final MatchPathToRoleFilter matchPathToRoleFilter;
     @Bean
     public SecurityWebFilterChain configureResourceServer(ServerHttpSecurity security) {
-        return security.authorizeExchange()
-                .pathMatchers("/actuator/health/**", "/*/*/*/public").permitAll()
-                .pathMatchers("/*/*/*/moderator-access").hasAnyRole("Moderator", "Admin")
-                .pathMatchers("/*/*/*/admin-access").hasRole("Admin")
-                .anyExchange().authenticated()
+
+        return security
+                .authorizeExchange()
+                .pathMatchers("/actuator/health/**", "/*/*/*/public/**").permitAll()
+                .anyExchange()
+                .authenticated()
                 .and()
+                .addFilterAfter(matchPathToRoleFilter, SecurityWebFiltersOrder.AUTHORIZATION)
                 .csrf().disable()
                 .httpBasic().disable()
                 .formLogin().disable()
