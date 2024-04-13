@@ -9,13 +9,17 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.jwt.Jwt;
+
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtGrantedAuthoritiesConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -30,7 +34,7 @@ public class SecurityConfig {
                 .authorizeExchange()
                 .pathMatchers("/actuator/health/**", "/*/*/*/public/**").permitAll()
                 .anyExchange()
-                .authenticated()
+                .permitAll()
                 .and()
                 .addFilterAfter(matchPathToRoleFilter, SecurityWebFiltersOrder.AUTHORIZATION)
                 .csrf().disable()

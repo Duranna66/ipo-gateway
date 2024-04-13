@@ -1,39 +1,42 @@
 server:
-  port: 8079
+  port: 8011
 spring:
   application:
     name: ipo-gateway
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: false
       discovery:
         locator:
           enabled: true
           lowerCaseServiceId: true
+      routes:
+        - id: resources
+          uri: http://ipo-post:8082
+          predicates:
+            Path=/v1/test/**
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8000/auth/realms/ipo-realm
+          issuer-uri: http://ipo-keycloak:8000/auth/realms/ipo-realm
   client:
     provider:
       keycloak:
-        issuer-uri: http://localhost:8000/auth/realms/ipo-realm
+        issuer-uri: http://ipo-keycloak:8000/auth/realms/ipo-realm
         user-name-attribute: preferred_username
     registration:
       keycloak:
         client-id: ipo
         client-secret: M9f0jrjYwwo9r3BLuMDWt7W2VxZOXHkw
         scope: openid
-  globalcors:
-    corsConfigurations:
-      '[/**]':
-        allowedOrigins: "*"
-        allowedMethods:
-          - GET
-          - POST
-          - DELETE
-        allowedHeaders:
-          - "*"
+
 
 security:
   access:
@@ -53,7 +56,7 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: http://localhost:5757/eureka
+      defaultZone: http://ipo-eureka:5757/eureka
 
 management:
   endpoint:
